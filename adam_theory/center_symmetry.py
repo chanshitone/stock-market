@@ -19,6 +19,7 @@ pro = ts.pro_api()
 ts_code = "002468.SZ"
 ts_code = "600578.SH"
 ts_code = "300408.SZ"
+ts_code = "300010.SZ"
 
 # 拉取数据
 df = pro.daily(
