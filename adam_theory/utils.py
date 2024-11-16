@@ -43,6 +43,7 @@ def retrieve_df(ts_code, start_date, end_date):
 
 
 def draw_center_symmetry(ts_code, stock_name):
+    print(f"正在生成 {stock_name} 中心对称图...")
     end_date = datetime.today().strftime("%Y%m%d")
 
     start_date = (datetime.today() - timedelta(days=60)).strftime("%Y%m%d")
@@ -53,7 +54,7 @@ def draw_center_symmetry(ts_code, stock_name):
     df = df.sort_values(by="trade_date")
 
     # 提取过去20天的数据
-    df_last_30_days = df.iloc[-32:]
+    df_last_30_days = df.iloc[-32:].copy()
 
     # rename columns trade_date to Date, open to Open, high to High, low to Low, close to Close, vol to Volume
     df_last_30_days.rename(
@@ -166,7 +167,7 @@ def draw_center_symmetry(ts_code, stock_name):
         df_last_30_days.index = pd.to_datetime(df_last_30_days.index)
 
     # create folder if not exist C:\Users\chans\OneDrive\Desktop\中心对称图\{end_date}
-    output_dir = f"C:\\Users\\chans\\OneDrive\\Desktop\\中心对称图\\{end_date}"
+    output_dir = f"C:\\Users\\chans\\OneDrive\\Desktop\\中心对称图\\{last_trade_date}"
     os.makedirs(output_dir, exist_ok=True)
 
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -204,3 +205,4 @@ def draw_center_symmetry(ts_code, stock_name):
     plt.tight_layout()
     plt.savefig(f"{output_dir}/{stock_name}_center_symmetry.png")
     plt.close()
+    print(f"{stock_name} 中心对称图已生成。")
