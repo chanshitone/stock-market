@@ -45,6 +45,8 @@ def retrieve_df(ts_code, start_date, end_date):
 def draw_center_symmetry(ts_code, stock_name):
     print(f"正在生成 {stock_name} 中心对称图...")
     end_date = datetime.today().strftime("%Y%m%d")
+    # specify end_date for testing purpose
+    # end_date = "20241118"
 
     start_date = (datetime.today() - timedelta(days=60)).strftime("%Y%m%d")
 
@@ -53,8 +55,8 @@ def draw_center_symmetry(ts_code, stock_name):
     # 确保数据是按日期升序排列
     df = df.sort_values(by="trade_date")
 
-    # 提取过去20天的数据
-    df_last_30_days = df.iloc[-32:].copy()
+    # 提取过去30天的数据
+    df_last_30_days = df.iloc[-30:].copy()
 
     # rename columns trade_date to Date, open to Open, high to High, low to Low, close to Close, vol to Volume
     df_last_30_days.rename(
@@ -119,33 +121,36 @@ def draw_center_symmetry(ts_code, stock_name):
 
     # sort the center_symmetry_df by Date
     center_symmetry_df = center_symmetry_df.sort_values(by="Date")
+    cycle_1 = 5
+    cycle_2 = 10
+    cycle_3 = 15
 
     # first 10 days lowest Low price and highest High price in center_symmetry_df
-    lowest_low_price_10_days = center_symmetry_df.head(10)["Low"].min()
+    lowest_low_price_10_days = center_symmetry_df.head(cycle_1)["Low"].min()
     potential_lost_percent_10_days = (
         (lowest_low_price_10_days - center_price) / center_price * 100
     )
-    highest_high_price_10_days = center_symmetry_df.head(10)["High"].max()
+    highest_high_price_10_days = center_symmetry_df.head(cycle_1)["High"].max()
     potential_profit_percent_10_days = (
         (highest_high_price_10_days - center_price) / center_price * 100
     )
 
     # 20 days lowest Low price and highest High price in center_symmetry_df
-    lowest_low_price_20_days = center_symmetry_df.head(20)["Low"].min()
+    lowest_low_price_20_days = center_symmetry_df.head(cycle_2)["Low"].min()
     potential_lost_percent_20_days = (
         (lowest_low_price_20_days - center_price) / center_price * 100
     )
-    highest_high_price_20_days = center_symmetry_df.head(20)["High"].max()
+    highest_high_price_20_days = center_symmetry_df.head(cycle_2)["High"].max()
     potential_profit_percent_20_days = (
         (highest_high_price_20_days - center_price) / center_price * 100
     )
 
     # 30 days lowest Low price and highest High price in center_symmetry_df
-    lowest_low_price_30_days = center_symmetry_df["Low"].min()
+    lowest_low_price_30_days = center_symmetry_df.head(cycle_3)["Low"].min()
     potential_lost_percent_30_days = (
         (lowest_low_price_30_days - center_price) / center_price * 100
     )
-    highest_high_price_30_days = center_symmetry_df["High"].max()
+    highest_high_price_30_days = center_symmetry_df.head(cycle_3)["High"].max()
     potential_profit_percent_30_days = (
         (highest_high_price_30_days - center_price) / center_price * 100
     )
@@ -156,8 +161,17 @@ def draw_center_symmetry(ts_code, stock_name):
     # 确保数据是按日期升序排列
     df_last_30_days = df_last_30_days.sort_values(by="Date")
 
+    # 自定义颜色
+    market_colors = mpf.make_marketcolors(
+        up="red",  # 上涨时的颜色
+        down="green",  # 下跌时的颜色
+        edge="inherit",  # K线边框颜色
+        wick="inherit",  # 烛芯颜色
+        volume="inherit",  # 成交量颜色
+    )
+
     # 设置图表样式
-    style = mpf.make_mpf_style(base_mpf_style="charles")
+    style = mpf.make_mpf_style(base_mpf_style="charles", marketcolors=market_colors)
 
     # Ensure 'Date' column is set as the index and is a DatetimeIndex
     if df_last_30_days.index.name != "Date":
@@ -172,6 +186,7 @@ def draw_center_symmetry(ts_code, stock_name):
 
     fig, ax = plt.subplots(figsize=(8, 6))
     # 绘制原始 K 线图
+    # 设置红色和绿色的颜色，红色代表上涨，绿色代表下跌
     mpf.plot(
         df_last_30_days,
         type="candle",
@@ -190,9 +205,9 @@ def draw_center_symmetry(ts_code, stock_name):
         0.07,
         f"""
         current_price: {center_price}
-        L_10D: {lowest_low_price_10_days:.2f}, PL_10D: {potential_lost_percent_10_days:.2f}%, H_10D: {highest_high_price_10_days:.2f}, PP_10D: {potential_profit_percent_10_days:.2f}%
-        L_20D: {lowest_low_price_20_days:.2f}, PL_20D: {potential_lost_percent_20_days:.2f}%, H_20D: {highest_high_price_20_days:.2f}, PP_20D: {potential_profit_percent_20_days:.2f}%
-        L_30D: {lowest_low_price_30_days:.2f}, PL_30D: {potential_lost_percent_30_days:.2f}%, H_30D: {highest_high_price_30_days:.2f}, PP_30D: {potential_profit_percent_30_days:.2f}%
+        L_05D: {lowest_low_price_10_days:.2f}, PL_05D: {potential_lost_percent_10_days:.2f}%, H_05D: {highest_high_price_10_days:.2f}, PP_05D: {potential_profit_percent_10_days:.2f}%
+        L_10D: {lowest_low_price_20_days:.2f}, PL_10D: {potential_lost_percent_20_days:.2f}%, H_10D: {highest_high_price_20_days:.2f}, PP_10D: {potential_profit_percent_20_days:.2f}%
+        L_15D: {lowest_low_price_30_days:.2f}, PL_15D: {potential_lost_percent_30_days:.2f}%, H_15D: {highest_high_price_30_days:.2f}, PP_15D: {potential_profit_percent_30_days:.2f}%
         """,
         horizontalalignment="center",
         verticalalignment="center",
