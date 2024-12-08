@@ -46,7 +46,7 @@ def draw_center_symmetry(ts_code, stock_name):
     print(f"正在生成 {stock_name} 中心对称图...")
     end_date = datetime.today().strftime("%Y%m%d")
     # specify end_date for testing purpose
-    # end_date = "20241118"
+    # end_date = "20241205"
 
     start_date = (datetime.today() - timedelta(days=60)).strftime("%Y%m%d")
 
@@ -77,7 +77,7 @@ def draw_center_symmetry(ts_code, stock_name):
     center_price = df_last_30_days.iloc[-1]["Close"]
     last_trade_date = df_last_30_days.iloc[-1]["Date"]
 
-    temp_df = df_last_30_days.copy().sort_values(by="Date").iloc[:-1]
+    temp_df = df_last_30_days.copy().sort_values(by="Date")
 
     temp_df = temp_df.sort_values(by="Date", ascending=False)
 
@@ -213,7 +213,7 @@ def draw_center_symmetry(ts_code, stock_name):
         verticalalignment="center",
         transform=ax.transAxes,
         fontsize=10,
-        color="red",
+        color="black",
     )
 
     # save the plot to a file to C:\Users\chans\OneDrive\Desktop\中心对称图\{end_date}\{ts_code}_center_symmetry.png
