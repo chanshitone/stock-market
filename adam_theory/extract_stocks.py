@@ -11,7 +11,7 @@ current_dir = os.path.dirname(__file__)
 with open(os.path.join(current_dir, "input", "stock_holdings.txt"), "w") as f:
     pass
 for image_path in os.listdir(os.path.join(current_dir, "input")):
-    if image_path.endswith(".png"):
+    if image_path.endswith(".png") | image_path.endswith(".jpg"):
         result = reader.readtext(os.path.join(current_dir, "input", image_path))
         # 提取和记录识别结果
         with open(os.path.join(current_dir, "input", "stock_holdings.txt"), "a") as f:
