@@ -102,15 +102,35 @@ def check_finance_yoy(ts_code, name=None, benchmark=YOY_BENCHMARK):
     #     f"{name} 最近三季度每股收益同比增长率: {q_eps_yoy:.2%}, {second_q_eps_yoy:.2%}, {third_q_eps_yoy:.2%}"
     # )
 
-    is_health = False
-    if (
-        q_dtprofit_yoy > benchmark
+    yoy_criteria = (
+        latest_q_sales_yoy > benchmark
+        and second_q_sales_yoy > benchmark
+        and third_q_sales_yoy > benchmark
+        and q_dtprofit_yoy > benchmark
         and second_q_dtprofit_yoy > benchmark
         and third_q_dtprofit_yoy > benchmark
         and q_eps_yoy > benchmark
         and second_q_eps_yoy > benchmark
         and third_q_eps_yoy > benchmark
-    ):
+    )
+
+    growth_criteria = (
+        latest_q_sales_yoy > 0
+        and second_q_sales_yoy > 0
+        and third_q_sales_yoy > 0
+        and latest_q_sales_yoy > second_q_sales_yoy > third_q_sales_yoy
+        and latest_q_dtprofit > 0
+        and second_q_dtprofit > 0
+        and third_q_dtprofit > 0
+        and latest_q_dtprofit > second_q_dtprofit > third_q_dtprofit
+        and latest_q_eps > 0
+        and second_q_eps > 0
+        and third_q_eps > 0
+        and latest_q_eps > second_q_eps > third_q_eps
+    )
+
+    is_health = False
+    if yoy_criteria or growth_criteria:
         # print(f"最近三季度扣非净利润和EPS同比增长率均大于{benchmark:.2%}")
         is_health = True
 

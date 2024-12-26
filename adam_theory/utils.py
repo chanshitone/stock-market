@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import tushare as ts
 import pandas as pd
 from datetime import datetime, timedelta
+import warnings
 
 
 def retrieve_df(ts_code, start_date, end_date):
@@ -45,6 +46,7 @@ def retrieve_df(ts_code, start_date, end_date):
 
 
 def draw_center_symmetry(ts_code, stock_name):
+    warnings.filterwarnings("ignore", category=FutureWarning, module="tushare")
     print(f"正在生成 {stock_name} 中心对称图...")
     end_date = datetime.today().strftime("%Y%m%d")
     # specify end_date for testing purpose
