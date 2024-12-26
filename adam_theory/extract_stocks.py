@@ -8,13 +8,14 @@ reader = easyocr.Reader(["ch_sim", "en"])
 current_dir = os.path.dirname(__file__)
 # loop all the png sufix files under ./input
 # clean the text in ./input/stock_holdings.txt
-with open(os.path.join(current_dir, "input", "stock_holdings.txt"), "w") as f:
+output_file = os.path.join(current_dir, "input", "stock_holdings.txt")
+with open(output_file, "w") as f:
     pass
-for image_path in os.listdir(os.path.join(current_dir, "input")):
+for image_path in os.listdir(os.path.join(current_dir, "input/picture")):
     if image_path.endswith(".png") | image_path.endswith(".jpg"):
-        result = reader.readtext(os.path.join(current_dir, "input", image_path))
+        result = reader.readtext(os.path.join(current_dir, "input/picture", image_path))
         # 提取和记录识别结果
-        with open(os.path.join(current_dir, "input", "stock_holdings.txt"), "a") as f:
+        with open(output_file, "a") as f:
             for bbox, text, prob in result:
                 # print(f"Text: {text}, Probability: {prob}")
                 # 只打印中文文本

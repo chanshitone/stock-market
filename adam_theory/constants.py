@@ -1,0 +1,1 @@
+YOY_BENCHMARK = 0.2

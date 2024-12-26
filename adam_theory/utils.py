@@ -15,31 +15,33 @@ def retrieve_df(ts_code, start_date, end_date):
     pro = ts.pro_api()
 
     # 拉取数据
-    df = pro.daily(
-        **{
-            "ts_code": ts_code,
-            "trade_date": "",
-            "start_date": start_date,
-            "end_date": end_date,
-            "offset": "",
-            "limit": "",
-        },
-        fields=[
-            "ts_code",
-            "trade_date",
-            "open",
-            "high",
-            "low",
-            "close",
-            "pre_close",
-            "change",
-            "pct_chg",
-            "vol",
-            "amount",
-        ],
-    )
+    # df = pro.daily(
+    #     **{
+    #         "ts_code": ts_code,
+    #         "trade_date": "",
+    #         "start_date": start_date,
+    #         "end_date": end_date,
+    #         "offset": "",
+    #         "limit": "",
+    #     },
+    #     fields=[
+    #         "ts_code",
+    #         "trade_date",
+    #         "open",
+    #         "high",
+    #         "low",
+    #         "close",
+    #         "pre_close",
+    #         "change",
+    #         "pct_chg",
+    #         "vol",
+    #         "amount",
+    #     ],
+    # )
 
-    return df
+    return ts.pro_bar(
+        ts_code=ts_code, adj="qfq", start_date=start_date, end_date=end_date
+    )
 
 
 def draw_center_symmetry(ts_code, stock_name):
