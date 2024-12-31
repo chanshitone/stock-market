@@ -92,15 +92,15 @@ def check_finance_yoy(ts_code, name=None, benchmark=YOY_BENCHMARK):
     )
     third_q_eps_yoy = (third_q_eps - third_last_year_q_eps) / abs(third_last_year_q_eps)
 
-    # print(
-    #     f"{name} 最近三季度营业收入同比增长率: {latest_q_sales_yoy}%, {second_q_sales_yoy:}%, {third_q_sales_yoy:}%"
-    # )
-    # print(
-    #     f"{name} 最近三季度扣非净利润同比增长率: {q_dtprofit_yoy:.2%}, {second_q_dtprofit_yoy:.2%}, {third_q_dtprofit_yoy:.2%}"
-    # )
-    # print(
-    #     f"{name} 最近三季度每股收益同比增长率: {q_eps_yoy:.2%}, {second_q_eps_yoy:.2%}, {third_q_eps_yoy:.2%}"
-    # )
+    print(
+        f"{name} 最近三季度营业收入同比增长率: {latest_q_sales_yoy}%, {second_q_sales_yoy:}%, {third_q_sales_yoy:}%"
+    )
+    print(
+        f"{name} 最近三季度扣非净利润同比增长率: {q_dtprofit_yoy:.2%}, {second_q_dtprofit_yoy:.2%}, {third_q_dtprofit_yoy:.2%}"
+    )
+    print(
+        f"{name} 最近三季度每股收益同比增长率: {q_eps_yoy:.2%}, {second_q_eps_yoy:.2%}, {third_q_eps_yoy:.2%}"
+    )
 
     yoy_criteria = (
         latest_q_sales_yoy > benchmark
@@ -122,20 +122,20 @@ def check_finance_yoy(ts_code, name=None, benchmark=YOY_BENCHMARK):
         and latest_q_dtprofit > 0
         and second_q_dtprofit > 0
         and third_q_dtprofit > 0
-        and latest_q_dtprofit > second_q_dtprofit > third_q_dtprofit
+        and q_dtprofit_yoy > second_q_dtprofit_yoy > third_q_dtprofit_yoy
         and latest_q_eps > 0
         and second_q_eps > 0
         and third_q_eps > 0
-        and latest_q_eps > second_q_eps > third_q_eps
+        and q_eps_yoy > second_q_eps_yoy > third_q_eps_yoy
     )
 
     is_health = False
     if yoy_criteria or growth_criteria:
-        # print(f"最近三季度扣非净利润和EPS同比增长率均大于{benchmark:.2%}")
+        print(f"最近三季度扣非净利润和EPS同比增长率均大于{benchmark:.2%} 或正增长")
         is_health = True
 
     return is_health
 
 
-# check_finance_yoy("002970.SZ")
+check_finance_yoy("601616.SH")
 # check_finance_yoy("002351.SZ")

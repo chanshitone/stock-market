@@ -37,4 +37,6 @@ def extract_stocks(picture_path, output_file_name):
                     # write the text to ./input/stock_holdings.txt with append mode
                     f.write(text + "\n")
 
+    # remove the duplicate stocks
+    stocks = list(set(stocks))
     return stocks

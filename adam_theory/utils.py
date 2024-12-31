@@ -50,7 +50,7 @@ def draw_center_symmetry(ts_code, stock_name):
     print(f"正在生成 {stock_name} 中心对称图...")
     end_date = datetime.today().strftime("%Y%m%d")
     # specify end_date for testing purpose
-    # end_date = "20241205"
+    end_date = "20241220"
 
     start_date = (datetime.today() - timedelta(days=60)).strftime("%Y%m%d")
 
