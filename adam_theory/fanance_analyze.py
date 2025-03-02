@@ -137,5 +137,5 @@ def check_finance_yoy(ts_code, name=None, benchmark=YOY_BENCHMARK):
     return is_health
 
 
-check_finance_yoy("601616.SH")
+# check_finance_yoy("601616.SH")
 # check_finance_yoy("002351.SZ")

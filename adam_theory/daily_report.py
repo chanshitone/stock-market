@@ -2,6 +2,7 @@ from extract_stocks import extract_stocks
 from fanance_analyze import check_finance_yoy
 import pandas as pd
 import os
+import time
 from utils import draw_center_symmetry
 
 
@@ -21,6 +22,7 @@ with pd.ExcelFile(file_path) as xls:
 
 health_stocks = []
 not_found_stocks = []
+count_allowed_per_minute = 0
 for stock in daily_stocks:
     ts_code = all_company_df[all_company_df["name"] == stock]["ts_code"].values
     if len(ts_code) == 0:
@@ -29,7 +31,13 @@ for stock in daily_stocks:
         continue
     ts_code = ts_code[0]
     try:
-        is_health = check_finance_yoy(ts_code, stock)
+        # fix issue "抱歉，您每分钟最多访问该接口200次，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108"
+        count_allowed_per_minute += 1
+        if count_allowed_per_minute == 199:
+            print("Sleep for 60 seconds")
+            count_allowed_per_minute = 0
+            time.sleep(60)
+        is_health = check_finance_yoy(ts_code, stock) 
         if is_health:
             print(f"{stock}")
             health_stocks.append(stock)
