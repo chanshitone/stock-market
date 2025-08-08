@@ -18,7 +18,7 @@ start_date = (today - timedelta(days=365)).strftime("%Y%m%d")
 
 # read the stock list from ./output/all_company.xlsx
 current_dir = os.path.dirname(__file__)
-file_path = os.path.join(current_dir, "output", "health_stocks_20241230.txt")
+file_path = os.path.join(current_dir, "output", "daily_stocks_20250414_232127.txt")
 # read the stock list from ./output/health_stocks.txt
 with open(file_path, "r") as f:
     stock_list = f.readlines()
@@ -57,6 +57,8 @@ for stock in stock_list:
             and latest_info["ma150"].values[0] > latest_info["ma200"].values[0]
         ):
             print(f"{stock} 多头排列")
+        else:
+            print(f"{stock} 空头排列")
     except Exception as e:
         print(f"Error processing {stock}: {e}")
 
@@ -64,3 +66,5 @@ for stock in stock_list:
 end_time = pd.Timestamp.now()
 print(f"Current time: {end_time}")
 print(f"Time elapsed: {end_time - start_time}")
+# Save the results to a file
+output_file = os.path.join(current_dir, "output", "bullish_alignment_results.txt")

@@ -9,7 +9,7 @@ from utils import draw_center_symmetry
 start_time = pd.Timestamp.now().strftime("%Y%m%d %H:%M:%S")
 print(f"Daily report started at {start_time}")
 
-today = pd.Timestamp.now().strftime("%Y%m%d")
+today = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
 # Extract stocks from gap up picture
 daily_stocks = extract_stocks("input/picture", f"daily_stocks_{today}.txt")
 
