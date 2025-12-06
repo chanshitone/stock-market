@@ -18,7 +18,9 @@ end_date = today.strftime("%Y%m%d")
 start_date = (today - timedelta(days=365)).strftime("%Y%m%d")
 
 # Extract stocks from gap up picture
-checking_stocks = extract_stocks("input/picture/breakthrough/13", f"checking_stocks_{today}.txt")
+gap_up_stocks = extract_stocks(
+    "input/picture/breakthrough/gap_up", f"gap_up_stocks_{today}.txt"
+)
 
 # Analyze stocks
 # read ./input/all_company.xlsx
@@ -29,7 +31,7 @@ with pd.ExcelFile(file_path) as xls:
 
 outputDf = pd.DataFrame(columns=["stock", "ratio"])
 
-for stock in checking_stocks:
+for stock in gap_up_stocks:
     ts_code = all_company_df[all_company_df["name"] == stock]["ts_code"].values
     if len(ts_code) == 0:
         print(f"Warning: Stock '{stock}' not found in all_company_df")
@@ -46,36 +48,11 @@ for stock in checking_stocks:
         )
         # get first row of the DataFram
         latest_info = df.iloc[0:1]
-        # get second row of the DataFrame
-        yst_info = df.iloc[1:2]
-        # get 3rd row of the DataFrame
-        third_info = df.iloc[2:3]
         m_v_13 = latest_info["ma_v_13"].values[0]
         today_v = latest_info["vol"].values[0]
         ratio = today_v / m_v_13
-        if (
-            latest_info["close"].values[0] > latest_info["ma13"].values[0]
-            and yst_info["close"].values[0] > yst_info["ma13"].values[0]
-            and third_info["close"].values[0] < third_info["ma13"].values[0]
-        ):
-            print(f"{stock} 连续两天收盘价站上13日均线")
-            print(f"{stock} ma_v_13: {m_v_13}, today_v: {today_v}, ratio: {ratio}")
-            # add the stock to dataset with ratio
-            outputDf.loc[len(outputDf)] = {
-                "stock": stock,
-                "ratio": ratio
-            }
-
-        elif (
-            latest_info["close"].values[0] > latest_info["ma13"].values[0]
-            and yst_info["close"].values[0] < yst_info["ma13"].values[0]
-        ):
-            print(f"{stock} 今日收盘价突破13日均线")
-            print(f"{stock} ma_v_13: {m_v_13}, today_v: {today_v}, ratio: {ratio}")
-            outputDf.loc[len(outputDf)] = {
-                "stock": stock,
-                "ratio": ratio
-            }
+        if ratio > 2.0:
+            outputDf.loc[len(outputDf)] = {"stock": stock, "ratio": ratio}
     except Exception as e:
         print(
             f"Error processing stock '{stock}' when checking financial indicator: {e}"
@@ -84,7 +61,7 @@ for stock in checking_stocks:
 
 if not outputDf.empty:
     outputDf.sort_values(by="ratio", ascending=False, inplace=True)
-    output_file = os.path.join(current_dir, "output", f"strength_stocks_{today}.csv")
+    output_file = os.path.join(current_dir, "output", f"gap_up_with_volume_{today}.csv")
     outputDf.to_csv(output_file, index=False)
 
 end_time = pd.Timestamp.now()
