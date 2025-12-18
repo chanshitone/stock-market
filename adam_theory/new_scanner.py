@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -31,13 +32,22 @@ with pd.ExcelFile(file_path) as xls:
 
 outputDf = pd.DataFrame(columns=["stock", "ratio", "close_strength", "highest_high_13"])
 
+count_allowed_per_minute = 0
+
 for stock in gap_up_stocks:
     ts_code = all_company_df[all_company_df["name"] == stock]["ts_code"].values
     if len(ts_code) == 0:
         print(f"Warning: Stock '{stock}' not found in all_company_df")
         continue
     ts_code = ts_code[0]
+
     try:
+        count_allowed_per_minute += 1
+        if count_allowed_per_minute == 49:
+            print("Sleep for 60 seconds")
+            count_allowed_per_minute = 0
+            time.sleep(60)
+
         df = ts.pro_bar(
             ts_code=ts_code,
             adj="qfq",
