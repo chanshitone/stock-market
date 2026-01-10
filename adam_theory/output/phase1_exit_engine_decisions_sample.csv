@@ -1,0 +1,6 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-01-10,BBB,HOLD,HOLD: no stop raise,11.2,-0.1,8
+2026-01-10,CCC,HOLD,"RAISE_STOP: close>=+2R, stop->>= 11.000",11.0,4.5,8
+2026-01-10,DDD,HOLD,"RAISE_STOP: close>=+2R, stop->>= 11.000",11.0,2.2,8
+2026-01-10,AAA,SELL,STOP_HIT(low<=stop) stop=9.500,9.5,-0.4,6
+2026-01-10,EEE,SELL,STOP_HIT(low<=stop) stop=19.000,19.0,-0.325,10

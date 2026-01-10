@@ -1,0 +1,4 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-01-09,601886.SH,HOLD,"RAISE_STOP: close>=+2R, stop->>= 8.440",8.45,2.0625,5
+2026-01-09,002539.SZ,SELL,STRUCT_BREAK: 2 consecutive closes below MA5,11.3,0.975,14
+2026-01-09,600029.SH,SELL,STRUCT_BREAK: 2 consecutive closes below MA5,7.55,1.2,15
