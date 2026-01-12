@@ -1,0 +1,2 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-01-12,601886.SH,HOLD,HOLD: close>=+2R but stop already >= target 8.440,8.45,2.0625,6

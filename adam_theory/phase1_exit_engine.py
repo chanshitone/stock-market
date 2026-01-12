@@ -307,19 +307,27 @@ def phase1_decide_for_symbol(
 
 def main():
     ap = argparse.ArgumentParser(description="Phase 1 exit decision engine (Day-2 shallow pullback, long-only).")
-    ap.add_argument("--positions", required=True, help="positions.csv")
+    ap.add_argument(
+        "--positions",
+        default=os.path.join(".", "adam_theory", "input", "phase1_exit_engine_sample", "positions.csv"),
+        help="positions.csv",
+    )
     ap.add_argument(
         "--bars",
         default=None,
         help="daily_bars.csv (OHLCV + ma5). If omitted, bars are fetched via Tushare pro_bar.",
     )
     ap.add_argument("--asof", default=None, help="YYYY-MM-DD, default = latest in bars")
-    ap.add_argument("--out", default="exit_decisions.csv", help="output decisions csv")
+    ap.add_argument("--out", default=None, help="output decisions csv")
     ap.add_argument("--token", default=None, help="Tushare token (or set env TUSHARE_TOKEN)")
     ap.add_argument("--start", default=None, help="YYYY-MM-DD for API fetch (default: based on earliest entry)")
     ap.add_argument("--end", default=None, help="YYYY-MM-DD for API fetch (default: today)")
     ap.add_argument("--throttle", type=int, default=49, help="API calls per minute before sleeping (default: 49)")
     args = ap.parse_args()
+
+    if args.out is None:
+        current_ts = pd.Timestamp.now().strftime("%Y-%m-%d_%H%M%S")
+        args.out = os.path.join(".", "adam_theory", "output", f"exit_decisions_{current_ts}.csv")
 
     pos_df = pd.read_csv(args.positions)
 
