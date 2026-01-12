@@ -2,9 +2,13 @@
 import tushare as ts
 from datetime import datetime
 from constants import YOY_BENCHMARK
+from utils import normalize_ts_code
 
 
 def check_finance_yoy(ts_code, name=None, benchmark=YOY_BENCHMARK):
+    norm = normalize_ts_code(ts_code) if isinstance(ts_code, str) else None
+    if norm:
+        ts_code = norm
     if name is None:
         name = ts_code
 

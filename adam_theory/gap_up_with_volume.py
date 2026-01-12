@@ -8,6 +8,7 @@ import tushare as ts
 import warnings
 import pandas as pd
 from extract_stocks import extract_stocks
+from utils import normalize_ts_code
 
 # start time
 start_time = pd.Timestamp.now()
@@ -23,20 +24,15 @@ gap_up_stocks = extract_stocks(
 )
 
 # Analyze stocks
-# read ./input/all_company.xlsx
 current_dir = os.path.dirname(__file__)
-file_path = os.path.join(current_dir, "input", "all_company.xlsx")
-with pd.ExcelFile(file_path) as xls:
-    all_company_df = pd.read_excel(xls)
 
 outputDf = pd.DataFrame(columns=["stock", "ratio"])
 
 for stock in gap_up_stocks:
-    ts_code = all_company_df[all_company_df["name"] == stock]["ts_code"].values
-    if len(ts_code) == 0:
-        print(f"Warning: Stock '{stock}' not found in all_company_df")
+    ts_code = normalize_ts_code(stock)
+    if not ts_code:
+        print(f"Warning: Cannot normalize stock code: '{stock}'")
         continue
-    ts_code = ts_code[0]
     try:
         df = ts.pro_bar(
             ts_code=ts_code,

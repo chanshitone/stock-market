@@ -7,6 +7,7 @@ from datetime import date, timedelta
 import tushare as ts
 import warnings
 import pandas as pd
+from utils import normalize_ts_code
 
 # start time
 start_time = pd.Timestamp.now()
@@ -27,20 +28,13 @@ with open(file_path, "r") as f:
     # remove duplicate stocks
     stock_list = list(set(stock_list))
 
-# read ./input/all_company.xlsx
-file_path = os.path.join(current_dir, "input", "all_company.xlsx")
-with pd.ExcelFile(file_path) as xls:
-    all_company_df = pd.read_excel(xls)
-
-
-# loop all the stocks in all_company_df
+# loop all the stocks
 for stock in stock_list:
 
-    ts_code = all_company_df[all_company_df["name"] == stock]["ts_code"].values
-    if len(ts_code) == 0:
-        print(f"Warning: Stock '{stock}' not found in all_company_df")
+    ts_code = normalize_ts_code(stock)
+    if not ts_code:
+        print(f"Warning: Cannot normalize stock code: '{stock}'")
         continue
-    ts_code = ts_code[0]
     df = ts.pro_bar(
         ts_code=ts_code,
         adj="qfq",

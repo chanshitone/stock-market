@@ -3,7 +3,7 @@ from fanance_analyze import check_finance_yoy
 import pandas as pd
 import os
 import time
-from utils import draw_center_symmetry
+from utils import draw_center_symmetry, normalize_ts_code
 
 
 start_time = pd.Timestamp.now().strftime("%Y%m%d %H:%M:%S")
@@ -14,22 +14,17 @@ today = pd.Timestamp.now().strftime("%Y%m%d_%H%M%S")
 daily_stocks = extract_stocks("input/picture", f"daily_stocks_{today}.txt")
 
 # Analyze stocks
-# read ./input/all_company.xlsx
 current_dir = os.path.dirname(__file__)
-file_path = os.path.join(current_dir, "input", "all_company.xlsx")
-with pd.ExcelFile(file_path) as xls:
-    all_company_df = pd.read_excel(xls)
 
 health_stocks = []
 not_found_stocks = []
 count_allowed_per_minute = 0
 for stock in daily_stocks:
-    ts_code = all_company_df[all_company_df["name"] == stock]["ts_code"].values
-    if len(ts_code) == 0:
-        print(f"Warning: Stock '{stock}' not found in all_company_df")
+    ts_code = normalize_ts_code(stock)
+    if not ts_code:
+        print(f"Warning: Cannot normalize stock code: '{stock}'")
         not_found_stocks.append(stock)
         continue
-    ts_code = ts_code[0]
     try:
         # fix issue "抱歉，您每分钟最多访问该接口200次，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108"
         count_allowed_per_minute += 1
@@ -37,7 +32,7 @@ for stock in daily_stocks:
             print("Sleep for 60 seconds")
             count_allowed_per_minute = 0
             time.sleep(60)
-        is_health = check_finance_yoy(ts_code, stock) 
+        is_health = check_finance_yoy(ts_code, stock)
         if is_health:
             print(f"{stock}")
             health_stocks.append(stock)

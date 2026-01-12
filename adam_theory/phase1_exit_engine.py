@@ -260,11 +260,17 @@ def phase1_decide_for_symbol(
     if r_close >= 2.0:
         target = entry + risk  # lock +1R
         new_stop = max(new_stop, target)
-        reason = f"RAISE_STOP: close>=+2R, stop->>= {target:.3f}"
+        if new_stop > current_stop:
+            reason = f"RAISE_STOP: close>=+2R, stop {current_stop:.3f}->{new_stop:.3f} (target {target:.3f})"
+        else:
+            reason = f"HOLD: close>=+2R but stop already >= target {target:.3f}"
     elif r_close >= 1.0:
         target = entry  # breakeven
         new_stop = max(new_stop, target)
-        reason = f"RAISE_STOP: close>=+1R, stop->>= {target:.3f}"
+        if new_stop > current_stop:
+            reason = f"RAISE_STOP: close>=+1R, stop {current_stop:.3f}->{new_stop:.3f} (target {target:.3f})"
+        else:
+            reason = f"HOLD: close>=+1R but stop already >= target {target:.3f}"
     else:
         reason = "HOLD: no stop raise"
 

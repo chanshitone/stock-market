@@ -1,40 +1,45 @@
-import easyocr
 import os
+import re
 
-# 初始化EasyOCR reader，指定支持的语言，例如中文('chinese')和英文('en')
+import easyocr
 
 
 def extract_stocks(picture_path, output_file_name):
+    """Extract digit strings from images under `picture_path`.
+
+    Returns a de-duplicated, sorted list of numbers (as strings). If any 6-digit
+    sequences are found, only those are kept (typical A-share stock codes).
+    """
+
     reader = easyocr.Reader(["ch_sim", "en"])
-
-    # 读取并识别图片
     current_dir = os.path.dirname(__file__)
-    # loop all the png sufix files under ./input
-    # clean the text in ./input/stock_holdings.txt
-    output_file = os.path.join(current_dir, "output", output_file_name)
-    stocks = []
-    with open(output_file, "w", encoding="utf-8") as f:
-        for image_path in os.listdir(os.path.join(current_dir, picture_path)):
-            if image_path.endswith(".png") | image_path.endswith(".jpg"):
-                result = reader.readtext(
-                    os.path.join(current_dir, picture_path, image_path)
-                )
-                # 提取和记录识别结果
-                with open(output_file, "a", encoding="utf-8") as f:
-                    for bbox, text, prob in result:
-                        # 只打印中文文本
-                        if (
-                            text.isascii()
-                            or text.isnumeric()
-                            or text.startswith("融")
-                            or text.startswith("创")
-                        ):
-                            continue
-                        print(f"{text}")
-                        stocks.append(text)
-                        # write the text to ./input/stock_holdings.txt with append mode
-                        f.write(text + "\n")
 
-    # remove the duplicate stocks
-    stocks = list(set(stocks))
-    return stocks
+    output_file = os.path.join(current_dir, "output", output_file_name)
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    # truncate output file
+    open(output_file, "w", encoding="utf-8").close()
+
+    image_dir = os.path.join(current_dir, picture_path)
+    numbers: list[str] = []
+    for image_name in os.listdir(image_dir):
+        if not image_name.lower().endswith((".png", ".jpg", ".jpeg")):
+            continue
+
+        full_image_path = os.path.join(image_dir, image_name)
+        result = reader.readtext(full_image_path)
+        for _, text, _ in result:
+            if not text:
+                continue
+            # collect all digit sequences from the token, e.g. "000001.SZ" -> ["000001"]
+            numbers.extend(re.findall(r"\d+", str(text)))
+
+    # Prefer 6-digit codes if present; otherwise keep whatever digits we found.
+    six_digit = [n for n in numbers if len(n) == 6]
+    picked = six_digit if six_digit else numbers
+    picked = sorted(set(picked))
+
+    with open(output_file, "a", encoding="utf-8") as f:
+        for n in picked:
+            f.write(n + "\n")
+
+    return picked

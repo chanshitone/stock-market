@@ -1,51 +1,69 @@
 import os
-import mplfinance as mpf
 import pandas as pd
-import matplotlib.pyplot as plt
+try:
+    import mplfinance as mpf  # type: ignore
+except Exception:
+    mpf = None
+
+try:
+    import matplotlib.pyplot as plt  # type: ignore
+except Exception:
+    plt = None
 
 # 导入tushare
 import tushare as ts
-import pandas as pd
 from datetime import datetime, timedelta
 import warnings
+import re
+
+
+def normalize_ts_code(code: str) -> str | None:
+    """Normalize a stock code into Tushare `ts_code`.
+
+    Accepts values like:
+    - "600519" -> "600519.SH"
+    - "000001" -> "000001.SZ"
+    - "000001.SZ" -> "000001.SZ"
+    - arbitrary text containing a 6-digit code -> normalized
+    """
+
+    if not code:
+        return None
+    text = str(code).strip().upper()
+    m = re.search(r"\b\d{6}\b", text)
+    if not m:
+        return None
+    raw = m.group(0)
+
+    if ".SZ" in text or text.endswith(".SZ"):
+        return f"{raw}.SZ"
+    if ".SH" in text or text.endswith(".SH"):
+        return f"{raw}.SH"
+
+    if raw.startswith(("0", "3")):
+        return f"{raw}.SZ"
+    if raw.startswith("6"):
+        return f"{raw}.SH"
+    return None
 
 
 def retrieve_df(ts_code, start_date, end_date):
     # 初始化pro接口
     ts.set_token("8b8ed979c3736e2485771cea39630f5e083921c78ae181f5f1ec34f5")
-    pro = ts.pro_api()
 
-    # 拉取数据
-    # df = pro.daily(
-    #     **{
-    #         "ts_code": ts_code,
-    #         "trade_date": "",
-    #         "start_date": start_date,
-    #         "end_date": end_date,
-    #         "offset": "",
-    #         "limit": "",
-    #     },
-    #     fields=[
-    #         "ts_code",
-    #         "trade_date",
-    #         "open",
-    #         "high",
-    #         "low",
-    #         "close",
-    #         "pre_close",
-    #         "change",
-    #         "pct_chg",
-    #         "vol",
-    #         "amount",
-    #     ],
-    # )
+    norm = normalize_ts_code(ts_code) if isinstance(ts_code, str) else None
+    if norm is None:
+        norm = ts_code
 
-    return ts.pro_bar(
-        ts_code=ts_code, adj="qfq", start_date=start_date, end_date=end_date
-    )
+    return ts.pro_bar(ts_code=norm, adj="qfq", start_date=start_date, end_date=end_date)
 
 
 def draw_center_symmetry(ts_code, stock_name):
+    if mpf is None or plt is None:
+        raise ModuleNotFoundError(
+            "Plotting dependencies are missing. Install 'mplfinance' and 'matplotlib' "
+            "to use draw_center_symmetry()."
+        )
     warnings.filterwarnings("ignore", category=FutureWarning, module="tushare")
     print(f"正在生成 {stock_name} 中心对称图...")
     end_date = datetime.today().strftime("%Y%m%d")
