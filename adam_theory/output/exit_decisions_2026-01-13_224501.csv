@@ -1,0 +1,2 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-01-13,601886.SH,SELL,STRUCT_BREAK: 2 consecutive closes below MA5,8.45,2.0625,7
