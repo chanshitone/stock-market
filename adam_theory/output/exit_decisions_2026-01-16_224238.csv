@@ -1,0 +1,3 @@
+﻿symbol,action,reason,new_stop,date,r_close,hold_days
+000739.SZ,HOLD,NO_SYMBOL_DATA,16.8,,,
+603165.SH,HOLD,HOLD: no stop raise,12.8,2026-01-16,0.8,3.0
