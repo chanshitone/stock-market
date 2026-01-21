@@ -378,6 +378,8 @@ def main():
             continue
 
         d = phase1_decide_for_symbol(sym_bars, p, asof=asof)
+        if isinstance(d.get("reason"), str) and d["reason"].startswith("RAISE_STOP"):
+            pos_df.loc[pos_df["symbol"].astype(str) == p.symbol, "current_stop"] = round(float(d["new_stop"]), 4)
         decisions.append({
             "date": asof.strftime("%Y-%m-%d"),
             "symbol": p.symbol,
@@ -390,6 +392,7 @@ def main():
 
     out_df = pd.DataFrame(decisions).sort_values(["action", "symbol"])
     out_df.to_csv(args.out, index=False, encoding="utf-8-sig")
+    pos_df.to_csv(args.positions, index=False, encoding="utf-8-sig")
     print(f"Saved: {args.out}")
     print(out_df.to_string(index=False))
 

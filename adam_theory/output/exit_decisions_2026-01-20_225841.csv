@@ -1,0 +1,4 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-01-20,000739.SZ,HOLD,"RAISE_STOP: close>=+1R, stop 16.800->17.550 (target 17.550)",17.55,1.2,5
+2026-01-20,600433.SH,HOLD,HOLD: no stop raise,3.35,-0.0769,2
+2026-01-20,603165.SH,HOLD,HOLD: close>=+2R but stop already >= target 13.700,13.7,3.8667,5
