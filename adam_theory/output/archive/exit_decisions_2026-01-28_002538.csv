@@ -1,0 +1,4 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-01-27,000739.SZ,HOLD,HOLD: close>=+2R but stop already >= target 18.300,18.3,2.0933,10
+2026-01-27,603165.SH,HOLD,HOLD: close>=+2R but stop already >= target 13.700,13.7,3.8667,10
+2026-01-27,600433.SH,SELL,STRUCT_BREAK: 2 consecutive closes below MA5,3.35,-0.0769,7

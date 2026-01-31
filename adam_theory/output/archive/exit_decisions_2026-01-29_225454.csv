@@ -1,0 +1,3 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-01-29,000739.SZ,HOLD,HOLD: close>=+2R but stop already >= target 18.300,18.3,2.1333,12
+2026-01-29,603165.SH,HOLD,HOLD: close>=+2R but stop already >= target 13.700,13.7,3.4444,12
