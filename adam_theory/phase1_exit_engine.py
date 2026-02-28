@@ -13,7 +13,7 @@ DEFAULT_TUSHARE_TOKEN = "8b8ed979c3736e2485771cea39630f5e083921c78ae181f5f1ec34f
 class Position:
     symbol: str
     entry_date: pd.Timestamp
-    entry_price: float   # weighted cost
+    entry_price: float  # weighted cost
     initial_stop: float  # S0
     current_stop: float  # current stop (monotonic up)
 
@@ -27,13 +27,17 @@ def _to_yyyymmdd(d: pd.Timestamp | date) -> str:
 def _normalize_pro_bar(df: pd.DataFrame, symbol: str) -> pd.DataFrame:
     """Normalize tushare pro_bar output to exit-engine schema."""
     if df is None or df.empty:
-        return pd.DataFrame(columns=["symbol", "date", "open", "high", "low", "close", "volume", "ma5"])
+        return pd.DataFrame(
+            columns=["symbol", "date", "open", "high", "low", "close", "volume", "ma5"]
+        )
 
     out = df.copy()
 
     # pro_bar returns trade_date as YYYYMMDD string and is often sorted desc by date
     if "trade_date" in out.columns:
-        out["date"] = pd.to_datetime(out["trade_date"].astype(str), format="%Y%m%d", errors="coerce")
+        out["date"] = pd.to_datetime(
+            out["trade_date"].astype(str), format="%Y%m%d", errors="coerce"
+        )
     elif "date" in out.columns:
         out["date"] = pd.to_datetime(out["date"], errors="coerce")
     else:
@@ -112,7 +116,9 @@ def fetch_daily_bars_from_tushare(
         all_rows.append(norm)
 
     if not all_rows:
-        return pd.DataFrame(columns=["symbol", "date", "open", "high", "low", "close", "volume", "ma5"])
+        return pd.DataFrame(
+            columns=["symbol", "date", "open", "high", "low", "close", "volume", "ma5"]
+        )
 
     return pd.concat(all_rows, ignore_index=True)
 
@@ -170,7 +176,11 @@ def phase1_decide_for_symbol(
     # Entry slice (from entry_date to asof)
     b_entry = b[b["date"] >= pos.entry_date].copy()
     if b_entry.empty:
-        return {"action": "HOLD", "reason": "NO_DATA_AFTER_ENTRY", "new_stop": pos.current_stop}
+        return {
+            "action": "HOLD",
+            "reason": "NO_DATA_AFTER_ENTRY",
+            "new_stop": pos.current_stop,
+        }
 
     today = b_entry.iloc[-1]
     prev = b_entry.iloc[-2] if len(b_entry) >= 2 else None
@@ -185,7 +195,11 @@ def phase1_decide_for_symbol(
     s0 = pos.initial_stop
     risk = entry - s0
     if risk <= 0:
-        return {"action": "HOLD", "reason": "INVALID_RISK(entry<=stop)", "new_stop": pos.current_stop}
+        return {
+            "action": "HOLD",
+            "reason": "INVALID_RISK(entry<=stop)",
+            "new_stop": pos.current_stop,
+        }
 
     r_close = calc_r(float(today["close"]), entry, s0)
     hold_days = len(b_entry)
@@ -209,7 +223,9 @@ def phase1_decide_for_symbol(
             "new_stop": current_stop,
             "r_close": r_close,
             "hold_days": hold_days,
-            "max_close_since_entry": max_close_before_today if max_close_before_today != float("-inf") else None,
+            "max_close_since_entry": max_close_before_today
+            if max_close_before_today != float("-inf")
+            else None,
         }
 
     # -------------------------
@@ -230,13 +246,19 @@ def phase1_decide_for_symbol(
                 "new_stop": current_stop,
                 "r_close": r_close,
                 "hold_days": hold_days,
-                "max_close_since_entry": max_close_before_today if max_close_before_today != float("-inf") else None,
+                "max_close_since_entry": max_close_before_today
+                if max_close_before_today != float("-inf")
+                else None,
             }
 
     # 2b: vol spike + no advance (close not new high close)
     # vol spike uses today's volume compared to MA5(volume) of full series
     today_row_full = b[b["date"] == today["date"]].iloc[-1]
-    vol_ma5 = float(today_row_full["vol_ma5"]) if pd.notna(today_row_full["vol_ma5"]) else None
+    vol_ma5 = (
+        float(today_row_full["vol_ma5"])
+        if pd.notna(today_row_full["vol_ma5"])
+        else None
+    )
     if vol_ma5 and vol_ma5 > 0:
         vol_spike = float(today["volume"]) >= vol_spike_mult * vol_ma5
         not_new_high_close = float(today["close"]) <= max_close_before_today
@@ -247,7 +269,9 @@ def phase1_decide_for_symbol(
                 "new_stop": current_stop,
                 "r_close": r_close,
                 "hold_days": hold_days,
-                "max_close_since_entry": max_close_before_today if max_close_before_today != float("-inf") else None,
+                "max_close_since_entry": max_close_before_today
+                if max_close_before_today != float("-inf")
+                else None,
             }
 
     # -------------------------
@@ -292,7 +316,9 @@ def phase1_decide_for_symbol(
                 "new_stop": new_stop,
                 "r_close": r_close,
                 "hold_days": hold_days,
-                "max_close_since_entry": max_close_before_today if max_close_before_today != float("-inf") else None,
+                "max_close_since_entry": max_close_before_today
+                if max_close_before_today != float("-inf")
+                else None,
             }
 
     return {
@@ -301,15 +327,21 @@ def phase1_decide_for_symbol(
         "new_stop": new_stop,
         "r_close": r_close,
         "hold_days": hold_days,
-        "max_close_since_entry": max_close_before_today if max_close_before_today != float("-inf") else None,
+        "max_close_since_entry": max_close_before_today
+        if max_close_before_today != float("-inf")
+        else None,
     }
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Phase 1 exit decision engine (Day-2 shallow pullback, long-only).")
+    ap = argparse.ArgumentParser(
+        description="Phase 1 exit decision engine (Day-2 shallow pullback, long-only)."
+    )
     ap.add_argument(
         "--positions",
-        default=os.path.join(".", "adam_theory", "input", "phase1_exit_engine_sample", "positions.csv"),
+        default=os.path.join(
+            ".", "adam_theory", "input", "phase1_exit_engine_sample", "positions.csv"
+        ),
         help="positions.csv",
     )
     ap.add_argument(
@@ -319,15 +351,30 @@ def main():
     )
     ap.add_argument("--asof", default=None, help="YYYY-MM-DD, default = latest in bars")
     ap.add_argument("--out", default=None, help="output decisions csv")
-    ap.add_argument("--token", default=None, help="Tushare token (or set env TUSHARE_TOKEN)")
-    ap.add_argument("--start", default=None, help="YYYY-MM-DD for API fetch (default: based on earliest entry)")
-    ap.add_argument("--end", default=None, help="YYYY-MM-DD for API fetch (default: today)")
-    ap.add_argument("--throttle", type=int, default=49, help="API calls per minute before sleeping (default: 49)")
+    ap.add_argument(
+        "--token", default=None, help="Tushare token (or set env TUSHARE_TOKEN)"
+    )
+    ap.add_argument(
+        "--start",
+        default=None,
+        help="YYYY-MM-DD for API fetch (default: based on earliest entry)",
+    )
+    ap.add_argument(
+        "--end", default=None, help="YYYY-MM-DD for API fetch (default: today)"
+    )
+    ap.add_argument(
+        "--throttle",
+        type=int,
+        default=49,
+        help="API calls per minute before sleeping (default: 49)",
+    )
     args = ap.parse_args()
 
     if args.out is None:
         current_ts = pd.Timestamp.now().strftime("%Y-%m-%d_%H%M%S")
-        args.out = os.path.join(".", "adam_theory", "output", f"exit_decisions_{current_ts}.csv")
+        args.out = os.path.join(
+            ".", "adam_theory", "output", f"exit_decisions_{current_ts}.csv"
+        )
 
     pos_df = pd.read_csv(args.positions)
 
@@ -339,7 +386,9 @@ def main():
     else:
         tmp = pos_df.copy()
         if "entry_date" not in tmp.columns:
-            raise SystemExit("positions.csv must contain an 'entry_date' column when using API fetch")
+            raise SystemExit(
+                "positions.csv must contain an 'entry_date' column when using API fetch"
+            )
         tmp["entry_date"] = pd.to_datetime(tmp["entry_date"], errors="coerce")
         earliest_entry = tmp["entry_date"].dropna().min()
         if pd.isna(earliest_entry):
@@ -350,11 +399,17 @@ def main():
         start_dt = pd.to_datetime(args.start) if args.start else default_start
         end_dt = pd.to_datetime(args.end) if args.end else pd.Timestamp(date.today())
 
-        symbols = [str(s).strip() for s in tmp["symbol"].dropna().unique().tolist() if str(s).strip()]
+        symbols = [
+            str(s).strip()
+            for s in tmp["symbol"].dropna().unique().tolist()
+            if str(s).strip()
+        ]
         if not symbols:
             raise SystemExit("positions.csv must contain at least one symbol")
 
-        print(f"Fetching bars via Tushare: symbols={len(symbols)}, start={start_dt.date()}, end={end_dt.date()}")
+        print(
+            f"Fetching bars via Tushare: symbols={len(symbols)}, start={start_dt.date()}, end={end_dt.date()}"
+        )
         bars_df = fetch_daily_bars_from_tushare(
             symbols=symbols,
             start=start_dt,
@@ -374,21 +429,34 @@ def main():
     for p in positions:
         sym_bars = bars_df[bars_df["symbol"] == p.symbol].copy()
         if sym_bars.empty:
-            decisions.append({"symbol": p.symbol, "action": "HOLD", "reason": "NO_SYMBOL_DATA", "new_stop": p.current_stop})
+            decisions.append(
+                {
+                    "symbol": p.symbol,
+                    "action": "HOLD",
+                    "reason": "NO_SYMBOL_DATA",
+                    "new_stop": p.current_stop,
+                }
+            )
             continue
 
         d = phase1_decide_for_symbol(sym_bars, p, asof=asof)
         if isinstance(d.get("reason"), str) and d["reason"].startswith("RAISE_STOP"):
-            pos_df.loc[pos_df["symbol"].astype(str) == p.symbol, "current_stop"] = round(float(d["new_stop"]), 4)
-        decisions.append({
-            "date": asof.strftime("%Y-%m-%d"),
-            "symbol": p.symbol,
-            "action": d["action"],
-            "reason": d["reason"],
-            "new_stop": round(float(d["new_stop"]), 4),
-            "r_close": None if pd.isna(d.get("r_close", float("nan"))) else round(float(d["r_close"]), 4),
-            "hold_days": d.get("hold_days", None),
-        })
+            pos_df.loc[pos_df["symbol"].astype(str) == p.symbol, "current_stop"] = (
+                round(float(d["new_stop"]), 4)
+            )
+        decisions.append(
+            {
+                "date": asof.strftime("%Y-%m-%d"),
+                "symbol": p.symbol,
+                "action": d["action"],
+                "reason": d["reason"],
+                "new_stop": round(float(d["new_stop"]), 4),
+                "r_close": None
+                if pd.isna(d.get("r_close", float("nan")))
+                else round(float(d["r_close"]), 4),
+                "hold_days": d.get("hold_days", None),
+            }
+        )
 
     out_df = pd.DataFrame(decisions).sort_values(["action", "symbol"])
     out_df.to_csv(args.out, index=False, encoding="utf-8-sig")

@@ -1,0 +1,3 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-02-26,000035.SZ,HOLD,HOLD: no stop raise,6.15,0.0,1
+2026-02-26,002933.SZ,HOLD,HOLD: no stop raise,36.0,0.1062,3

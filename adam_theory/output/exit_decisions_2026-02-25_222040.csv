@@ -1,0 +1,2 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-02-25,002933.SZ,HOLD,INVALID_RISK(entry<=stop),36.0,,

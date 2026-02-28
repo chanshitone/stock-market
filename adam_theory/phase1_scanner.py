@@ -75,8 +75,7 @@ def main():
                     close_strength = round(
                         (latest_info["close"].values[0] - latest_info["low"].values[0])
                         / (
-                            latest_info["high"].values[0]
-                            - latest_info["low"].values[0]
+                            latest_info["high"].values[0] - latest_info["low"].values[0]
                         ),
                         2,
                     )
