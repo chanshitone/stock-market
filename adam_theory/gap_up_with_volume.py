@@ -8,12 +8,14 @@ import tushare as ts
 import warnings
 import pandas as pd
 from extract_stocks import extract_stocks
+from env_config import configure_tushare
 from utils import normalize_ts_code
 
 # start time
 start_time = pd.Timestamp.now()
 print(f"Current time: {start_time}")
 warnings.filterwarnings("ignore", category=FutureWarning, module="tushare")
+configure_tushare(ts)
 today = date.today()
 end_date = today.strftime("%Y%m%d")
 start_date = (today - timedelta(days=365)).strftime("%Y%m%d")

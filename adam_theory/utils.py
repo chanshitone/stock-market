@@ -15,6 +15,7 @@ import tushare as ts
 from datetime import datetime, timedelta
 import warnings
 import re
+from env_config import configure_tushare
 
 
 def normalize_ts_code(code: str) -> str | None:
@@ -49,7 +50,7 @@ def normalize_ts_code(code: str) -> str | None:
 
 def retrieve_df(ts_code, start_date, end_date):
     # 初始化pro接口
-    ts.set_token("8b8ed979c3736e2485771cea39630f5e083921c78ae181f5f1ec34f5")
+    configure_tushare(ts)
 
     norm = normalize_ts_code(ts_code) if isinstance(ts_code, str) else None
     if norm is None:

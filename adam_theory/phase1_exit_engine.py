@@ -2,11 +2,9 @@ import argparse
 from dataclasses import dataclass
 import os
 import time
-from datetime import date, timedelta
+from datetime import date
 import pandas as pd
-
-
-DEFAULT_TUSHARE_TOKEN = "8b8ed979c3736e2485771cea39630f5e083921c78ae181f5f1ec34f5"
+from env_config import get_tushare_token
 
 
 @dataclass
@@ -74,7 +72,10 @@ def fetch_daily_bars_from_tushare(
             "Missing dependency 'tushare'. Install it or provide --bars instead of API fetching."
         ) from e
 
-    token = token or os.getenv("TUSHARE_TOKEN") or DEFAULT_TUSHARE_TOKEN
+    try:
+        token = get_tushare_token(token=token, required=True)
+    except RuntimeError as e:
+        raise SystemExit(str(e)) from e
 
     ts.set_token(token)
 

@@ -2,6 +2,7 @@
 import tushare as ts
 from datetime import datetime
 from constants import YOY_BENCHMARK
+from env_config import get_tushare_pro
 from utils import normalize_ts_code
 
 
@@ -13,7 +14,7 @@ def check_finance_yoy(ts_code, name=None, benchmark=YOY_BENCHMARK):
         name = ts_code
 
     # 初始化pro接口
-    pro = ts.pro_api("8b8ed979c3736e2485771cea39630f5e083921c78ae181f5f1ec34f5")
+    pro = get_tushare_pro(ts)
 
     # 拉取数据
     df = pro.fina_indicator(

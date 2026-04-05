@@ -9,6 +9,7 @@ import tushare as ts
 import warnings
 import pandas as pd
 from extract_stocks import extract_stocks
+from env_config import configure_tushare
 from utils import normalize_ts_code
 
 
@@ -28,6 +29,7 @@ def main():
     start_time = pd.Timestamp.now()
     print(f"Current time: {start_time}")
     warnings.filterwarnings("ignore", category=FutureWarning, module="tushare")
+    configure_tushare(ts)
     today = date.today()
     end_date = today.strftime("%Y%m%d")
     start_date = (today - timedelta(days=60)).strftime("%Y%m%d")
@@ -65,7 +67,7 @@ def main():
             m_v_5 = latest_info["ma_v_5"].values[0]
             today_v = latest_info["vol"].values[0]
             ratio = round(today_v / m_v_5, 2)
-            if ratio >= 2.0:
+            if ratio >=  2.0:
                 # calculate the highest close price in last 13 days
                 # get the 2nd to 14th rows of the DataFrame (exclude the latest row)
                 df = df.iloc[1:14].reset_index(drop=True)

@@ -1,8 +1,9 @@
 import tushare as ts
 import pandas as pd
 import os
-ts.set_token("8b8ed979c3736e2485771cea39630f5e083921c78ae181f5f1ec34f5")
-pro = ts.pro_api()
+from env_config import get_tushare_pro
+
+pro = get_tushare_pro(ts)
 
 data = pro.query(
     "stock_basic",

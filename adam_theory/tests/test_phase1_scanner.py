@@ -9,13 +9,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
+from env_config import get_tushare_token
 import phase1_scanner
 
 
 def test_fetch_pro_bar_real_api():
-    token = os.getenv("TUSHARE_TOKEN")
-    if not token:   
-        ts.set_token("8b8ed979c3736e2485771cea39630f5e083921c78ae181f5f1ec34f5")
+    token = get_tushare_token(required=False)
+    if not token:
+        pytest.skip("TUSHARE_TOKEN is not configured")
+
+    ts.set_token(token)
 
     df = phase1_scanner.fetch_pro_bar(
         "600897.SH",

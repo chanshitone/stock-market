@@ -1,0 +1,3 @@
+﻿date,symbol,action,reason,new_stop,r_close,hold_days
+2026-03-03,000035.SZ,SELL,STRUCT_STALL: vol>= 1.5xMA5(vol) and close not new high close,6.7,4.5455,4
+2026-03-03,002933.SZ,SELL,STOP_HIT(low<=stop) stop=36.000,36.0,-2.9823,6

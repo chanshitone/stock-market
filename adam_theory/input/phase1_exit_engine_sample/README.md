@@ -31,10 +31,10 @@ What each sample symbol is designed to trigger (as-of 2026-01-10):
 
 ## Option B: Run engine with API bars (simplest)
 
-Set your token (recommended):
+Set your token in the repo-root `.env` file (recommended):
 
-```powershell
-$env:TUSHARE_TOKEN="<your_token_here>"
+```env
+TUSHARE_TOKEN=your_tushare_token_here
 ```
 
 Run the engine; it will fetch bars via Tushare automatically when `--bars` is omitted:
