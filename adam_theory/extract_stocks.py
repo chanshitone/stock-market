@@ -10,21 +10,29 @@ def extract_stocks(picture_path, output_file_name):
     Returns a de-duplicated, sorted list of numbers (as strings). If any 6-digit
     sequences are found, only those are kept (typical A-share stock codes).
     """
+    current_dir = os.path.dirname(__file__)
+
+    image_dir = os.path.join(current_dir, picture_path)
+    if not os.path.isdir(image_dir):
+        return []
+
+    image_names = [
+        image_name
+        for image_name in os.listdir(image_dir)
+        if image_name.lower().endswith((".png", ".jpg", ".jpeg"))
+    ]
+    if not image_names:
+        return []
 
     reader = easyocr.Reader(["ch_sim", "en"])
-    current_dir = os.path.dirname(__file__)
 
     output_file = os.path.join(current_dir, "output", output_file_name)
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     # truncate output file
     open(output_file, "w", encoding="utf-8").close()
 
-    image_dir = os.path.join(current_dir, picture_path)
     numbers: list[str] = []
-    for image_name in os.listdir(image_dir):
-        if not image_name.lower().endswith((".png", ".jpg", ".jpeg")):
-            continue
-
+    for image_name in image_names:
         full_image_path = os.path.join(image_dir, image_name)
         result = reader.readtext(full_image_path)
         for _, text, _ in result:

@@ -1,0 +1,5 @@
+﻿date,symbol,entry_price,stop_price,action,reason,exit_price,r_close,hold_days,max_r_since_entry
+2026-04-20,000301.SZ,12.32,11.704,HOLD,HOLD: no exit condition triggered,,0.0812,1,0.0812
+2026-04-20,300444.SZ,15.35,14.5825,HOLD,HOLD: no exit condition triggered,,0.7427,3,0.7427
+2026-04-20,600233.SH,21.35,20.2825,HOLD,HOLD: no exit condition triggered,,-0.4871,3,0.0749
+2026-04-20,605060.SH,61.77,58.6815,HOLD,HOLD: no exit condition triggered,,0.0648,1,0.0648
